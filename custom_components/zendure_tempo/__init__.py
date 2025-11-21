@@ -15,6 +15,8 @@ from .const import (
     CONF_TEMPO_COLOR,
     CONF_TEMPO_NEXT_COLOR,
     CONF_TEMPO_HC,
+    CONF_TEMPO_JOURS_ROUGE,
+    CONF_TEMPO_JOURS_BLANC,
     CONF_HYPER_INPUT_LIMIT,
     CONF_HYPER_OUTPUT_LIMIT,
     CONF_HYPER_SOC_SET,
@@ -122,6 +124,29 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         return state.state == "on" if state else False
 
     @property
+    def jours_restants_rouge(self) -> int:
+        """Get remaining red days in cycle."""
+        state = self.hass.states.get(self.entry.data[CONF_TEMPO_JOURS_ROUGE])
+        try:
+            return int(float(state.state)) if state else 0
+        except (ValueError, TypeError):
+            return 0
+
+    @property
+    def jours_restants_blanc(self) -> int:
+        """Get remaining white days in cycle."""
+        state = self.hass.states.get(self.entry.data[CONF_TEMPO_JOURS_BLANC])
+        try:
+            return int(float(state.state)) if state else 0
+        except (ValueError, TypeError):
+            return 0
+
+    @property
+    def has_tempo_days_remaining(self) -> bool:
+        """Check if there are red or white days remaining."""
+        return self.jours_restants_rouge > 0 or self.jours_restants_blanc > 0
+
+    @property
     def soc_rouge(self) -> int:
         """Get SOC target for red days."""
         return self.entry.options.get("soc_rouge", DEFAULT_SOC_ROUGE)
@@ -145,6 +170,10 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         """Determine current mode based on tempo state."""
         if not self.enabled:
             return MODE_DISABLED
+
+        # If no red/white days remaining, just use normal mode
+        if not self.has_tempo_days_remaining:
+            return MODE_BLEU
 
         color = self.tempo_color
         next_color = self.tempo_next_color

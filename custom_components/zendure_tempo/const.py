@@ -15,6 +15,8 @@ CONF_TEMPO_HC = "tempo_hc_entity"
 CONF_HYPER_INPUT_LIMIT = "hyper_input_limit_entity"
 CONF_HYPER_OUTPUT_LIMIT = "hyper_output_limit_entity"
 CONF_HYPER_SOC_SET = "hyper_soc_set_entity"
+CONF_TEMPO_JOURS_ROUGE = "tempo_jours_rouge_entity"
+CONF_TEMPO_JOURS_BLANC = "tempo_jours_blanc_entity"
 
 # Tempo colors
 COLOR_BLEU = "Bleu"

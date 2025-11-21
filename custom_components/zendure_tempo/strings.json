@@ -8,6 +8,8 @@
           "tempo_color_entity": "Couleur Tempo actuelle",
           "tempo_next_color_entity": "Couleur Tempo demain",
           "tempo_hc_entity": "Heures creuses (binary_sensor)",
+          "tempo_jours_rouge_entity": "Jours Rouge restants",
+          "tempo_jours_blanc_entity": "Jours Blanc restants",
           "hyper_input_limit_entity": "Limite d'entrée Hyper",
           "hyper_output_limit_entity": "Limite de sortie Hyper",
           "hyper_soc_set_entity": "SOC cible Hyper"

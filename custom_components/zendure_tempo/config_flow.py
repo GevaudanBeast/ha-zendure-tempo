@@ -11,6 +11,8 @@ from .const import (
     CONF_TEMPO_COLOR,
     CONF_TEMPO_NEXT_COLOR,
     CONF_TEMPO_HC,
+    CONF_TEMPO_JOURS_ROUGE,
+    CONF_TEMPO_JOURS_BLANC,
     CONF_HYPER_INPUT_LIMIT,
     CONF_HYPER_OUTPUT_LIMIT,
     CONF_HYPER_SOC_SET,
@@ -34,6 +36,7 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # Validate that entities exist
             valid = True
             for key in [CONF_TEMPO_COLOR, CONF_TEMPO_NEXT_COLOR, CONF_TEMPO_HC,
+                       CONF_TEMPO_JOURS_ROUGE, CONF_TEMPO_JOURS_BLANC,
                        CONF_HYPER_INPUT_LIMIT, CONF_HYPER_OUTPUT_LIMIT, CONF_HYPER_SOC_SET]:
                 if not self.hass.states.get(user_input[key]):
                     errors[key] = "entity_not_found"
@@ -56,6 +59,12 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ),
                 vol.Required(CONF_TEMPO_HC, default="binary_sensor.rte_tempo_heures_creuses"): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="binary_sensor")
+                ),
+                vol.Required(CONF_TEMPO_JOURS_ROUGE, default="sensor.rte_tempo_cycle_jours_restants_rouge"): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="sensor")
+                ),
+                vol.Required(CONF_TEMPO_JOURS_BLANC, default="sensor.rte_tempo_cycle_jours_restants_blanc"): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="sensor")
                 ),
                 vol.Required(CONF_HYPER_INPUT_LIMIT, default="number.hyper_2000_input_limit"): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="number")

@@ -14,6 +14,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - Support des jours Rouge, Blanc, Bleu
 - Charge préventive la veille des jours Rouges
 - Notification automatique avant les jours Rouges
-- Switch pour activer/désactiver le pilotage
+- Switch pour activer/désactiver le pilotage (activé par défaut)
 - Sensor affichant le mode actuel
 - Traductions français et anglais
+- Détection automatique de la saison Tempo (basée sur les jours restants)
+- Persistance de l'état activé/désactivé après redémarrage
