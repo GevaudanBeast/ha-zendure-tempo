@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration Zendure Tempo",
+        "description": "Sélectionnez les entités de votre installation",
+        "data": {
+          "tempo_color_entity": "Couleur Tempo actuelle",
+          "tempo_next_color_entity": "Couleur Tempo demain",
+          "tempo_hc_entity": "Heures creuses (binary_sensor)",
+          "hyper_input_limit_entity": "Limite d'entrée Hyper",
+          "hyper_output_limit_entity": "Limite de sortie Hyper",
+          "hyper_soc_set_entity": "SOC cible Hyper"
+        }
+      }
+    },
+    "error": {
+      "entity_not_found": "Entité non trouvée"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options Zendure Tempo",
+        "data": {
+          "soc_rouge": "SOC cible jour Rouge (%)",
+          "soc_normal": "SOC cible normal (%)",
+          "input_limit_max": "Limite charge max (W)",
+          "output_limit_max": "Limite décharge max (W)"
+        }
+      }
+    }
+  }
+}

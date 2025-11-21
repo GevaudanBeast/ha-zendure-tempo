@@ -1,0 +1,12 @@
+{
+  "domain": "zendure_tempo",
+  "name": "Zendure Tempo",
+  "codeowners": ["@GevaudanBeast"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/GevaudanBeast/ha-zendure-tempo",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/GevaudanBeast/ha-zendure-tempo/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

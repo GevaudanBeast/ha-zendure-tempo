@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Zendure Tempo Configuration",
+        "description": "Select your installation entities",
+        "data": {
+          "tempo_color_entity": "Current Tempo color",
+          "tempo_next_color_entity": "Tomorrow's Tempo color",
+          "tempo_hc_entity": "Off-peak hours (binary_sensor)",
+          "hyper_input_limit_entity": "Hyper input limit",
+          "hyper_output_limit_entity": "Hyper output limit",
+          "hyper_soc_set_entity": "Hyper SOC target"
+        }
+      }
+    },
+    "error": {
+      "entity_not_found": "Entity not found"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zendure Tempo Options",
+        "data": {
+          "soc_rouge": "SOC target for Red days (%)",
+          "soc_normal": "Normal SOC target (%)",
+          "input_limit_max": "Max charge limit (W)",
+          "output_limit_max": "Max discharge limit (W)"
+        }
+      }
+    }
+  }
+}
