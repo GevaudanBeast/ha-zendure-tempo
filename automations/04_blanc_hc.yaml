@@ -1,0 +1,47 @@
+alias: "Zendure Tempo - Blanc HC - Normal"
+description: "Jour Blanc + HC : mode normal"
+trigger:
+  - platform: state
+    entity_id: binary_sensor.rte_tempo_heures_creuses
+    to: "on"
+  - platform: state
+    entity_id: sensor.rte_tempo_couleur_actuelle
+    to: "Blanc"
+  - platform: homeassistant
+    event: start
+condition:
+  - condition: state
+    entity_id: input_boolean.zendure_tempo_enabled
+    state: "on"
+  - condition: state
+    entity_id: sensor.rte_tempo_couleur_actuelle
+    state: "Blanc"
+  - condition: state
+    entity_id: binary_sensor.rte_tempo_heures_creuses
+    state: "on"
+  - condition: not
+    conditions:
+      - condition: state
+        entity_id: sensor.rte_tempo_prochaine_couleur
+        state: "Rouge"
+action:
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_input_limit
+    data:
+      value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_output_limit
+    data:
+      value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_soc_set
+    data:
+      value: "{{ states('input_number.zendure_tempo_soc_normal') | int }}"
+  - service: logbook.log
+    data:
+      name: "Zendure Tempo"
+      message: "Blanc HC - Mode normal"
+mode: single

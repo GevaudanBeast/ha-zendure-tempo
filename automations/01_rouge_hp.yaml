@@ -1,0 +1,37 @@
+alias: "Zendure Tempo - Rouge HP - Décharge"
+description: "Jour Rouge + HP : décharge maximale, pas de charge réseau"
+trigger:
+  - platform: state
+    entity_id: binary_sensor.rte_tempo_heures_creuses
+    to: "off"
+  - platform: state
+    entity_id: sensor.rte_tempo_couleur_actuelle
+    to: "Rouge"
+  - platform: homeassistant
+    event: start
+condition:
+  - condition: state
+    entity_id: input_boolean.zendure_tempo_enabled
+    state: "on"
+  - condition: state
+    entity_id: sensor.rte_tempo_couleur_actuelle
+    state: "Rouge"
+  - condition: state
+    entity_id: binary_sensor.rte_tempo_heures_creuses
+    state: "off"
+action:
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_input_limit
+    data:
+      value: 0
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_output_limit
+    data:
+      value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+  - service: logbook.log
+    data:
+      name: "Zendure Tempo"
+      message: "Rouge HP - Décharge activée (input=0, output=max)"
+mode: single

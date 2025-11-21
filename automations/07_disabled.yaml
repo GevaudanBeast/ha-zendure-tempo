@@ -1,0 +1,27 @@
+alias: "Zendure Tempo - Désactivé"
+description: "Retour aux valeurs normales quand le pilotage est désactivé"
+trigger:
+  - platform: state
+    entity_id: input_boolean.zendure_tempo_enabled
+    to: "off"
+action:
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_input_limit
+    data:
+      value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_output_limit
+    data:
+      value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+  - service: number.set_value
+    target:
+      entity_id: number.hyper_2000_soc_set
+    data:
+      value: "{{ states('input_number.zendure_tempo_soc_normal') | int }}"
+  - service: logbook.log
+    data:
+      name: "Zendure Tempo"
+      message: "Pilotage désactivé - Retour mode normal"
+mode: single
