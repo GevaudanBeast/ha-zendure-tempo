@@ -282,13 +282,14 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
 
             await self._set_number(soc_set_entity, target_soc)
 
-            # Send notification
+            # Send notification (with fixed ID to avoid duplicates on restart)
             await self.hass.services.async_call(
                 "persistent_notification",
                 "create",
                 {
                     "title": "Tempo - Jour Rouge demain",
                     "message": f"Demain est un jour ROUGE. Charge de la batterie en cours (cible: {target_soc}%).{solar_msg}",
+                    "notification_id": "zendure_tempo_veille_rouge",
                 },
             )
 
