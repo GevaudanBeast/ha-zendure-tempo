@@ -1,0 +1,276 @@
+# ============================================================================
+# ZENDURE TEMPO - À coller à la fin de votre fichier automations.yaml
+# ============================================================================
+# PRÉREQUIS : Créer ces helpers via l'UI (Paramètres > Entrées) :
+#   - input_boolean.zendure_tempo_enabled
+#   - input_number.zendure_tempo_soc_rouge (80-100, défaut 100)
+#   - input_number.zendure_tempo_soc_normal (70-100, défaut 90)
+#   - input_number.zendure_tempo_input_limit_max (0-1200, défaut 1200)
+#   - input_number.zendure_tempo_output_limit_max (0-1200, défaut 1200)
+# ============================================================================
+
+- alias: "Zendure Tempo - Rouge HP - Décharge"
+  description: "Jour Rouge + HP : décharge maximale, pas de charge réseau"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      to: "off"
+    - platform: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      to: "Rouge"
+    - platform: homeassistant
+      event: start
+  condition:
+    - condition: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      state: "on"
+    - condition: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      state: "Rouge"
+    - condition: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      state: "off"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: 0
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+  mode: single
+
+- alias: "Zendure Tempo - Rouge HC - Charge"
+  description: "Jour Rouge + HC : charge maximale pour tenir la journée"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      to: "on"
+    - platform: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      to: "Rouge"
+    - platform: homeassistant
+      event: start
+  condition:
+    - condition: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      state: "on"
+    - condition: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      state: "Rouge"
+    - condition: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      state: "on"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: 0
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_soc_set
+      data:
+        value: "{{ states('input_number.zendure_tempo_soc_rouge') | int }}"
+  mode: single
+
+- alias: "Zendure Tempo - Blanc HP - Décharge"
+  description: "Jour Blanc + HP : décharge pour économiser"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      to: "off"
+    - platform: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      to: "Blanc"
+    - platform: homeassistant
+      event: start
+  condition:
+    - condition: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      state: "on"
+    - condition: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      state: "Blanc"
+    - condition: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      state: "off"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: 0
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+  mode: single
+
+- alias: "Zendure Tempo - Blanc HC - Normal"
+  description: "Jour Blanc + HC : mode normal"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      to: "on"
+    - platform: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      to: "Blanc"
+    - platform: homeassistant
+      event: start
+  condition:
+    - condition: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      state: "on"
+    - condition: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      state: "Blanc"
+    - condition: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      state: "on"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.rte_tempo_prochaine_couleur
+          state: "Rouge"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_soc_set
+      data:
+        value: "{{ states('input_number.zendure_tempo_soc_normal') | int }}"
+  mode: single
+
+- alias: "Zendure Tempo - Veille Rouge - Charge"
+  description: "Veille d'un jour Rouge en HC : charge maximale préventive"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      to: "on"
+    - platform: state
+      entity_id: sensor.rte_tempo_prochaine_couleur
+      to: "Rouge"
+    - platform: homeassistant
+      event: start
+  condition:
+    - condition: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      state: "on"
+    - condition: state
+      entity_id: sensor.rte_tempo_prochaine_couleur
+      state: "Rouge"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.rte_tempo_couleur_actuelle
+          state: "Rouge"
+    - condition: state
+      entity_id: binary_sensor.rte_tempo_heures_creuses
+      state: "on"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: 0
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_soc_set
+      data:
+        value: "{{ states('input_number.zendure_tempo_soc_rouge') | int }}"
+    - service: persistent_notification.create
+      data:
+        title: "Tempo - Jour Rouge demain"
+        message: "Demain est un jour ROUGE. Charge de la batterie en cours."
+  mode: single
+
+- alias: "Zendure Tempo - Bleu - Normal"
+  description: "Jour Bleu : mode smart normal"
+  trigger:
+    - platform: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      to: "Bleu"
+    - platform: homeassistant
+      event: start
+  condition:
+    - condition: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      state: "on"
+    - condition: state
+      entity_id: sensor.rte_tempo_couleur_actuelle
+      state: "Bleu"
+    - condition: not
+      conditions:
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.rte_tempo_prochaine_couleur
+              state: "Rouge"
+            - condition: state
+              entity_id: binary_sensor.rte_tempo_heures_creuses
+              state: "on"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_soc_set
+      data:
+        value: "{{ states('input_number.zendure_tempo_soc_normal') | int }}"
+  mode: single
+
+- alias: "Zendure Tempo - Désactivé"
+  description: "Retour aux valeurs normales quand le pilotage est désactivé"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.zendure_tempo_enabled
+      to: "off"
+  action:
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_input_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_input_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_output_limit
+      data:
+        value: "{{ states('input_number.zendure_tempo_output_limit_max') | int }}"
+    - service: number.set_value
+      target:
+        entity_id: number.hyper_2000_soc_set
+      data:
+        value: "{{ states('input_number.zendure_tempo_soc_normal') | int }}"
+  mode: single
