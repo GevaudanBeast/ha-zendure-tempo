@@ -36,12 +36,17 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Validate that entities exist
+            # Validate that required entities exist
             valid = True
-            for key in [CONF_TEMPO_COLOR, CONF_TEMPO_NEXT_COLOR, CONF_TEMPO_HC,
-                       CONF_TEMPO_JOURS_ROUGE, CONF_TEMPO_JOURS_BLANC,
-                       CONF_HYPER_INPUT_LIMIT, CONF_HYPER_OUTPUT_LIMIT, CONF_HYPER_SOC_SET]:
-                if not self.hass.states.get(user_input[key]):
+            required_keys = [CONF_TEMPO_COLOR, CONF_TEMPO_NEXT_COLOR, CONF_TEMPO_HC,
+                            CONF_HYPER_INPUT_LIMIT, CONF_HYPER_OUTPUT_LIMIT, CONF_HYPER_SOC_SET]
+            for key in required_keys:
+                if not self.hass.states.get(user_input.get(key)):
+                    errors[key] = "entity_not_found"
+                    valid = False
+            # Validate optional entities only if provided
+            for key in [CONF_TEMPO_JOURS_ROUGE, CONF_TEMPO_JOURS_BLANC, CONF_SOLAR_FORECAST]:
+                if user_input.get(key) and not self.hass.states.get(user_input[key]):
                     errors[key] = "entity_not_found"
                     valid = False
 
@@ -63,10 +68,10 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_TEMPO_HC, default="binary_sensor.rte_tempo_heures_creuses"): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="binary_sensor")
                 ),
-                vol.Required(CONF_TEMPO_JOURS_ROUGE, default="sensor.rte_tempo_cycle_jours_restants_rouge"): selector.EntitySelector(
+                vol.Optional(CONF_TEMPO_JOURS_ROUGE): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="sensor")
                 ),
-                vol.Required(CONF_TEMPO_JOURS_BLANC, default="sensor.rte_tempo_cycle_jours_restants_blanc"): selector.EntitySelector(
+                vol.Optional(CONF_TEMPO_JOURS_BLANC): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="sensor")
                 ),
                 vol.Required(CONF_HYPER_INPUT_LIMIT, default="number.hyper_2000_input_limit"): selector.EntitySelector(
@@ -89,7 +94,7 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return ZendureTempoOptionsFlow(config_entry)
+        return ZendureTempoOptionsFlow()
 
 
 class ZendureTempoOptionsFlow(config_entries.OptionsFlow):
