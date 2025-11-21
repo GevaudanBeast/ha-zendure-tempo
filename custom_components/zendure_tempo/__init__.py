@@ -129,7 +129,10 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
     @property
     def jours_restants_rouge(self) -> int:
         """Get remaining red days in cycle."""
-        state = self.hass.states.get(self.entry.data[CONF_TEMPO_JOURS_ROUGE])
+        entity_id = self.entry.data.get(CONF_TEMPO_JOURS_ROUGE)
+        if not entity_id:
+            return 0
+        state = self.hass.states.get(entity_id)
         try:
             return int(float(state.state)) if state else 0
         except (ValueError, TypeError):
@@ -138,7 +141,10 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
     @property
     def jours_restants_blanc(self) -> int:
         """Get remaining white days in cycle."""
-        state = self.hass.states.get(self.entry.data[CONF_TEMPO_JOURS_BLANC])
+        entity_id = self.entry.data.get(CONF_TEMPO_JOURS_BLANC)
+        if not entity_id:
+            return 0
+        state = self.hass.states.get(entity_id)
         try:
             return int(float(state.state)) if state else 0
         except (ValueError, TypeError):
