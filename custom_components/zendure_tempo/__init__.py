@@ -99,8 +99,8 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=30),
         )
         self.entry = entry
-        # Restore enabled state from options (persisted)
-        self.enabled = entry.options.get("enabled", False)
+        # Restore enabled state from options (default: enabled)
+        self.enabled = entry.options.get("enabled", True)
         self._last_mode = None
 
     @property
