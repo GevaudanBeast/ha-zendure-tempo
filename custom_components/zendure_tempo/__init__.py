@@ -99,7 +99,8 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=30),
         )
         self.entry = entry
-        self.enabled = False
+        # Restore enabled state from options (persisted)
+        self.enabled = entry.options.get("enabled", False)
         self._last_mode = None
 
     @property
@@ -242,6 +243,9 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
     async def async_set_enabled(self, enabled: bool) -> None:
         """Enable or disable the tempo control."""
         self.enabled = enabled
+        # Persist the state in options
+        new_options = {**self.entry.options, "enabled": enabled}
+        self.hass.config_entries.async_update_entry(self.entry, options=new_options)
         if enabled:
             self._last_mode = None  # Force reapply
             await self.async_request_refresh()
