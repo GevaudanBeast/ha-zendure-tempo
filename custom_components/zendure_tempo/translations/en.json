@@ -12,7 +12,8 @@
           "tempo_jours_blanc_entity": "Remaining White days",
           "hyper_input_limit_entity": "Hyper input limit",
           "hyper_output_limit_entity": "Hyper output limit",
-          "hyper_soc_set_entity": "Hyper SOC target"
+          "hyper_soc_set_entity": "Hyper SOC target",
+          "solar_forecast_entity": "Solar forecast tomorrow (optional)"
         }
       }
     },
@@ -28,7 +29,9 @@
           "soc_rouge": "SOC target for Red days (%)",
           "soc_normal": "Normal SOC target (%)",
           "input_limit_max": "Max charge limit (W)",
-          "output_limit_max": "Max discharge limit (W)"
+          "output_limit_max": "Max discharge limit (W)",
+          "soc_rouge_soleil": "SOC for Red days with sun forecast (%)",
+          "solar_threshold": "Solar production threshold (kWh)"
         }
       }
     }

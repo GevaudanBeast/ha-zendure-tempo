@@ -13,13 +13,16 @@ from .const import (
     CONF_TEMPO_HC,
     CONF_TEMPO_JOURS_ROUGE,
     CONF_TEMPO_JOURS_BLANC,
+    CONF_SOLAR_FORECAST,
     CONF_HYPER_INPUT_LIMIT,
     CONF_HYPER_OUTPUT_LIMIT,
     CONF_HYPER_SOC_SET,
     DEFAULT_SOC_ROUGE,
+    DEFAULT_SOC_ROUGE_SOLEIL,
     DEFAULT_SOC_NORMAL,
     DEFAULT_INPUT_LIMIT,
     DEFAULT_OUTPUT_LIMIT,
+    DEFAULT_SOLAR_THRESHOLD,
 )
 
 
@@ -75,6 +78,9 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_HYPER_SOC_SET, default="number.hyper_2000_soc_set"): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="number")
                 ),
+                vol.Optional(CONF_SOLAR_FORECAST): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="sensor")
+                ),
             }),
             errors=errors,
         )
@@ -124,6 +130,18 @@ class ZendureTempoOptionsFlow(config_entries.OptionsFlow):
                     default=self.config_entry.options.get("output_limit_max", DEFAULT_OUTPUT_LIMIT)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=1200, step=100, unit_of_measurement="W")
+                ),
+                vol.Required(
+                    "soc_rouge_soleil",
+                    default=self.config_entry.options.get("soc_rouge_soleil", DEFAULT_SOC_ROUGE_SOLEIL)
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(min=50, max=100, step=5, unit_of_measurement="%")
+                ),
+                vol.Required(
+                    "solar_threshold",
+                    default=self.config_entry.options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(min=0, max=20, step=0.5, unit_of_measurement="kWh")
                 ),
             }),
         )

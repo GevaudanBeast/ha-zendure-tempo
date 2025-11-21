@@ -17,13 +17,16 @@ from .const import (
     CONF_TEMPO_HC,
     CONF_TEMPO_JOURS_ROUGE,
     CONF_TEMPO_JOURS_BLANC,
+    CONF_SOLAR_FORECAST,
     CONF_HYPER_INPUT_LIMIT,
     CONF_HYPER_OUTPUT_LIMIT,
     CONF_HYPER_SOC_SET,
     DEFAULT_SOC_ROUGE,
+    DEFAULT_SOC_ROUGE_SOLEIL,
     DEFAULT_SOC_NORMAL,
     DEFAULT_INPUT_LIMIT,
     DEFAULT_OUTPUT_LIMIT,
+    DEFAULT_SOLAR_THRESHOLD,
     COLOR_ROUGE,
     COLOR_BLANC,
     COLOR_BLEU,
@@ -166,6 +169,33 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         """Get max output limit."""
         return self.entry.options.get("output_limit_max", DEFAULT_OUTPUT_LIMIT)
 
+    @property
+    def soc_rouge_soleil(self) -> int:
+        """Get SOC target for red days with solar forecast."""
+        return self.entry.options.get("soc_rouge_soleil", DEFAULT_SOC_ROUGE_SOLEIL)
+
+    @property
+    def solar_threshold(self) -> float:
+        """Get minimum solar production to reduce charge."""
+        return self.entry.options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
+
+    @property
+    def solar_forecast_tomorrow(self) -> float:
+        """Get solar production forecast for tomorrow in kWh."""
+        solar_entity = self.entry.data.get(CONF_SOLAR_FORECAST)
+        if not solar_entity:
+            return 0.0
+        state = self.hass.states.get(solar_entity)
+        try:
+            return float(state.state) if state else 0.0
+        except (ValueError, TypeError):
+            return 0.0
+
+    @property
+    def has_good_solar_forecast(self) -> bool:
+        """Check if solar forecast is good enough to reduce charge."""
+        return self.solar_forecast_tomorrow >= self.solar_threshold
+
     def get_current_mode(self) -> str:
         """Determine current mode based on tempo state."""
         if not self.enabled:
@@ -238,17 +268,27 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
             await self._set_number(soc_set_entity, self.soc_normal)
 
         elif mode == MODE_VEILLE_ROUGE:
-            # Pre-red: charge max
+            # Pre-red: charge based on solar forecast
             await self._set_number(input_limit_entity, self.input_limit_max)
             await self._set_number(output_limit_entity, 0)
-            await self._set_number(soc_set_entity, self.soc_rouge)
+
+            # Adjust SOC based on solar forecast
+            if self.has_good_solar_forecast:
+                target_soc = self.soc_rouge_soleil
+                solar_msg = f" Solaire prévu: {self.solar_forecast_tomorrow:.1f} kWh → charge réduite à {target_soc}%."
+            else:
+                target_soc = self.soc_rouge
+                solar_msg = ""
+
+            await self._set_number(soc_set_entity, target_soc)
+
             # Send notification
             await self.hass.services.async_call(
                 "persistent_notification",
                 "create",
                 {
                     "title": "Tempo - Jour Rouge demain",
-                    "message": "Demain est un jour ROUGE. Charge de la batterie en cours.",
+                    "message": f"Demain est un jour ROUGE. Charge de la batterie en cours (cible: {target_soc}%).{solar_msg}",
                 },
             )
 
