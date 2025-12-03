@@ -5,6 +5,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.0.5] - 2025-12-03
+
+### Ajouté
+- Support multi-batteries : possibilité de créer plusieurs instances de l'intégration
+- Champ "Nom" personnalisable pour distinguer chaque instance/batterie
+- Documentation complète pour la configuration multi-batteries
+
 ## [0.0.4] - 2025-12-03
 
 ### Ajouté

@@ -2,6 +2,9 @@
 
 DOMAIN = "zendure_tempo"
 
+# Configuration keys
+CONF_NAME = "name"
+
 # Default values
 DEFAULT_SOC_ROUGE = 100
 DEFAULT_SOC_ROUGE_SOLEIL = 80  # SOC reduced when solar expected

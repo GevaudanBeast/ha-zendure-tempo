@@ -5,6 +5,7 @@ Intégration Home Assistant pour piloter automatiquement les batteries Zendure H
 ## Fonctionnalités
 
 - **Pilotage automatique** charge/décharge selon la couleur Tempo et les heures creuses/pleines
+- **Support multi-batteries** : créez une instance par batterie avec réglages indépendants
 - **Activation sélective** par couleur : choisissez quels types de jours piloter automatiquement
 - **Charge préventive** la veille des jours Rouges avec optimisation solaire
 - **Prévision solaire** : réduction intelligente de la charge si bonne production prévue
@@ -36,9 +37,12 @@ Intégration Home Assistant pour piloter automatiquement les batteries Zendure H
 
 ## Configuration
 
+### Configuration simple (une batterie)
+
 1. Aller dans **Paramètres → Appareils et services → Ajouter une intégration**
 2. Chercher "Zendure Tempo"
-3. Sélectionner vos entités :
+3. Donner un nom à l'instance (optionnel) : `Zendure Tempo` ou laissez par défaut
+4. Sélectionner vos entités :
    - **Obligatoires** :
      - Couleur Tempo actuelle : `sensor.rte_tempo_couleur_actuelle`
      - Couleur Tempo demain : `sensor.rte_tempo_prochaine_couleur`
@@ -50,6 +54,24 @@ Intégration Home Assistant pour piloter automatiquement les batteries Zendure H
      - Jours rouges restants : `sensor.rte_tempo_cycle_jours_restants_rouge`
      - Jours blancs restants : `sensor.rte_tempo_cycle_jours_restants_blanc`
      - Prévision solaire demain : `sensor.solcast_pv_forecast_today` (ou autre)
+
+### Configuration multi-batteries
+
+Si vous avez **plusieurs batteries Hyper 2000**, vous pouvez créer une instance par batterie :
+
+1. **Première batterie** :
+   - Ajouter l'intégration "Zendure Tempo"
+   - Nom : `Zendure Tempo - Batterie 1`
+   - Sélectionner les entités : `number.hyper_2000_input_limit`, `number.hyper_2000_output_limit`, etc.
+
+2. **Deuxième batterie** :
+   - Ajouter à nouveau l'intégration "Zendure Tempo"
+   - Nom : `Zendure Tempo - Batterie 2`
+   - Sélectionner les entités : `number.hyper_2000_2_input_limit`, `number.hyper_2000_2_output_limit`, etc.
+
+3. **Troisième batterie, etc.** : Répéter le processus
+
+**Avantages** : Chaque batterie peut avoir ses propres réglages (SOC cible, limites, activation par couleur, etc.)
 
 ## Options
 
