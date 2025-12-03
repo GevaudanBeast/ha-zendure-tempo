@@ -9,6 +9,9 @@ DEFAULT_SOC_NORMAL = 90
 DEFAULT_INPUT_LIMIT = 1200
 DEFAULT_OUTPUT_LIMIT = 1200
 DEFAULT_SOLAR_THRESHOLD = 3.0  # kWh - minimum solar to reduce charge
+DEFAULT_ENABLED_ROUGE = True
+DEFAULT_ENABLED_BLANC = True
+DEFAULT_ENABLED_BLEU = False  # Disabled by default for blue days
 
 # Entity IDs (to be configured)
 CONF_TEMPO_COLOR = "tempo_color_entity"

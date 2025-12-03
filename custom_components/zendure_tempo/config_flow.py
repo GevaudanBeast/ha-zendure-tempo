@@ -23,6 +23,9 @@ from .const import (
     DEFAULT_INPUT_LIMIT,
     DEFAULT_OUTPUT_LIMIT,
     DEFAULT_SOLAR_THRESHOLD,
+    DEFAULT_ENABLED_ROUGE,
+    DEFAULT_ENABLED_BLANC,
+    DEFAULT_ENABLED_BLEU,
 )
 
 
@@ -114,6 +117,18 @@ class ZendureTempoOptionsFlow(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
+                vol.Required(
+                    "enabled_rouge",
+                    default=current_options.get("enabled_rouge", DEFAULT_ENABLED_ROUGE)
+                ): selector.BooleanSelector(),
+                vol.Required(
+                    "enabled_blanc",
+                    default=current_options.get("enabled_blanc", DEFAULT_ENABLED_BLANC)
+                ): selector.BooleanSelector(),
+                vol.Required(
+                    "enabled_bleu",
+                    default=current_options.get("enabled_bleu", DEFAULT_ENABLED_BLEU)
+                ): selector.BooleanSelector(),
                 vol.Required(
                     "soc_rouge",
                     default=current_options.get("soc_rouge", DEFAULT_SOC_ROUGE)

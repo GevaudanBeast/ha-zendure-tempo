@@ -27,6 +27,9 @@ from .const import (
     DEFAULT_INPUT_LIMIT,
     DEFAULT_OUTPUT_LIMIT,
     DEFAULT_SOLAR_THRESHOLD,
+    DEFAULT_ENABLED_ROUGE,
+    DEFAULT_ENABLED_BLANC,
+    DEFAULT_ENABLED_BLEU,
     COLOR_ROUGE,
     COLOR_BLANC,
     COLOR_BLEU,
@@ -191,6 +194,21 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         return self._options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
 
     @property
+    def enabled_rouge(self) -> bool:
+        """Check if automation is enabled for red days."""
+        return self._options.get("enabled_rouge", DEFAULT_ENABLED_ROUGE)
+
+    @property
+    def enabled_blanc(self) -> bool:
+        """Check if automation is enabled for white days."""
+        return self._options.get("enabled_blanc", DEFAULT_ENABLED_BLANC)
+
+    @property
+    def enabled_bleu(self) -> bool:
+        """Check if automation is enabled for blue days."""
+        return self._options.get("enabled_bleu", DEFAULT_ENABLED_BLEU)
+
+    @property
     def solar_forecast_tomorrow(self) -> float:
         """Get solar production forecast for tomorrow in kWh."""
         solar_entity = self.entry.data.get(CONF_SOLAR_FORECAST)
@@ -221,18 +239,27 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         hc = self.is_heures_creuses
 
         if color == COLOR_ROUGE:
+            # If red day automation is disabled, use normal mode
+            if not self.enabled_rouge:
+                return MODE_BLEU
             return MODE_ROUGE_HC if hc else MODE_ROUGE_HP
         elif color == COLOR_BLANC:
+            # If white day automation is disabled, use normal mode
+            if not self.enabled_blanc:
+                return MODE_BLEU
             if hc:
-                # If tomorrow is red, prepare
-                if next_color == COLOR_ROUGE:
+                # If tomorrow is red and red automation is enabled, prepare
+                if next_color == COLOR_ROUGE and self.enabled_rouge:
                     return MODE_VEILLE_ROUGE
                 return MODE_BLANC_HC
             return MODE_BLANC_HP
         elif color == COLOR_BLEU:
-            # If tomorrow is red and we're in HC, prepare
-            if next_color == COLOR_ROUGE and hc:
+            # If tomorrow is red and we're in HC and red automation is enabled, prepare
+            if next_color == COLOR_ROUGE and hc and self.enabled_rouge:
                 return MODE_VEILLE_ROUGE
+            # If blue day automation is disabled, use normal mode
+            if not self.enabled_bleu:
+                return MODE_BLEU
             return MODE_BLEU
 
         return MODE_BLEU
