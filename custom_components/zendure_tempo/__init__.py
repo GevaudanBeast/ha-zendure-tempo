@@ -105,8 +105,13 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         )
         self.entry = entry
         # Restore enabled state from options (default: enabled)
-        self.enabled = entry.options.get("enabled", True)
+        self.enabled = self._options.get("enabled", True)
         self._last_mode = None
+
+    @property
+    def _options(self) -> dict:
+        """Get options safely."""
+        return getattr(self.entry, 'options', {}) or {}
 
     @property
     def tempo_color(self) -> str | None:
@@ -158,32 +163,32 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
     @property
     def soc_rouge(self) -> int:
         """Get SOC target for red days."""
-        return self.entry.options.get("soc_rouge", DEFAULT_SOC_ROUGE)
+        return self._options.get("soc_rouge", DEFAULT_SOC_ROUGE)
 
     @property
     def soc_normal(self) -> int:
         """Get SOC target for normal days."""
-        return self.entry.options.get("soc_normal", DEFAULT_SOC_NORMAL)
+        return self._options.get("soc_normal", DEFAULT_SOC_NORMAL)
 
     @property
     def input_limit_max(self) -> int:
         """Get max input limit."""
-        return self.entry.options.get("input_limit_max", DEFAULT_INPUT_LIMIT)
+        return self._options.get("input_limit_max", DEFAULT_INPUT_LIMIT)
 
     @property
     def output_limit_max(self) -> int:
         """Get max output limit."""
-        return self.entry.options.get("output_limit_max", DEFAULT_OUTPUT_LIMIT)
+        return self._options.get("output_limit_max", DEFAULT_OUTPUT_LIMIT)
 
     @property
     def soc_rouge_soleil(self) -> int:
         """Get SOC target for red days with solar forecast."""
-        return self.entry.options.get("soc_rouge_soleil", DEFAULT_SOC_ROUGE_SOLEIL)
+        return self._options.get("soc_rouge_soleil", DEFAULT_SOC_ROUGE_SOLEIL)
 
     @property
     def solar_threshold(self) -> float:
         """Get minimum solar production to reduce charge."""
-        return self.entry.options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
+        return self._options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
 
     @property
     def solar_forecast_tomorrow(self) -> float:
@@ -320,7 +325,7 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         """Enable or disable the tempo control."""
         self.enabled = enabled
         # Persist the state in options
-        new_options = {**self.entry.options, "enabled": enabled}
+        new_options = {**self._options, "enabled": enabled}
         self.hass.config_entries.async_update_entry(self.entry, options=new_options)
         if enabled:
             self._last_mode = None  # Force reapply

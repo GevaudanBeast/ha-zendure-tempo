@@ -104,45 +104,49 @@ class ZendureTempoOptionsFlow(config_entries.OptionsFlow):
         """Manage the options."""
         if user_input is not None:
             # Merge with existing options to preserve 'enabled' state
-            new_options = {**self.config_entry.options, **user_input}
+            existing_options = getattr(self.config_entry, 'options', {}) or {}
+            new_options = {**existing_options, **user_input}
             return self.async_create_entry(title="", data=new_options)
+
+        # Get current options safely
+        current_options = getattr(self.config_entry, 'options', {}) or {}
 
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
                 vol.Required(
                     "soc_rouge",
-                    default=self.config_entry.options.get("soc_rouge", DEFAULT_SOC_ROUGE)
+                    default=current_options.get("soc_rouge", DEFAULT_SOC_ROUGE)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=80, max=100, step=5, unit_of_measurement="%")
                 ),
                 vol.Required(
                     "soc_normal",
-                    default=self.config_entry.options.get("soc_normal", DEFAULT_SOC_NORMAL)
+                    default=current_options.get("soc_normal", DEFAULT_SOC_NORMAL)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=70, max=100, step=5, unit_of_measurement="%")
                 ),
                 vol.Required(
                     "input_limit_max",
-                    default=self.config_entry.options.get("input_limit_max", DEFAULT_INPUT_LIMIT)
+                    default=current_options.get("input_limit_max", DEFAULT_INPUT_LIMIT)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=1200, step=100, unit_of_measurement="W")
                 ),
                 vol.Required(
                     "output_limit_max",
-                    default=self.config_entry.options.get("output_limit_max", DEFAULT_OUTPUT_LIMIT)
+                    default=current_options.get("output_limit_max", DEFAULT_OUTPUT_LIMIT)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=1200, step=100, unit_of_measurement="W")
                 ),
                 vol.Required(
                     "soc_rouge_soleil",
-                    default=self.config_entry.options.get("soc_rouge_soleil", DEFAULT_SOC_ROUGE_SOLEIL)
+                    default=current_options.get("soc_rouge_soleil", DEFAULT_SOC_ROUGE_SOLEIL)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=50, max=100, step=5, unit_of_measurement="%")
                 ),
                 vol.Required(
                     "solar_threshold",
-                    default=self.config_entry.options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
+                    default=current_options.get("solar_threshold", DEFAULT_SOLAR_THRESHOLD)
                 ): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=20, step=0.5, unit_of_measurement="kWh")
                 ),
