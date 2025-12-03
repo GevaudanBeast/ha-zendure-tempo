@@ -5,7 +5,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [0.0.4] - 2025-12-03
 
 ### Ajouté
 - Cases à cocher pour activer/désactiver le pilotage par couleur (rouge/blanc/bleu)
