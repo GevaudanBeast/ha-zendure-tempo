@@ -7,6 +7,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -111,6 +112,17 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         self.enabled = self._options.get("enabled", True)
         self._last_mode = None
         self._test_mode = None  # For manual testing
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information about this Zendure Tempo instance."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.entry.entry_id)},
+            name=self.entry.title,
+            manufacturer="Zendure",
+            model="Tempo Controller",
+            sw_version="0.0.5",
+        )
 
     @property
     def _options(self) -> dict:

@@ -31,12 +31,7 @@ class ZendureTempoSwitch(CoordinatorEntity, SwitchEntity):
         """Initialize the switch."""
         super().__init__(coordinator)
         self._attr_unique_id = f"{entry.entry_id}_enabled"
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, entry.entry_id)},
-            "name": "Zendure Tempo",
-            "manufacturer": "Community",
-            "model": "Tempo Battery Controller",
-        }
+        self._attr_device_info = coordinator.device_info
 
     @property
     def is_on(self) -> bool:
