@@ -50,6 +50,7 @@ class ZendureTempoTestButton(CoordinatorEntity, ButtonEntity):
         self._attr_name = f"Test {mode}"
         self._attr_unique_id = f"{entry.entry_id}_{button_id}"
         self._attr_icon = self._get_icon_for_mode(mode)
+        self._attr_device_info = coordinator.device_info
 
     def _get_icon_for_mode(self, mode: str) -> str:
         """Get icon based on mode."""
@@ -80,6 +81,7 @@ class ZendureTempoResetButton(CoordinatorEntity, ButtonEntity):
         self._attr_name = "Réinitialiser mode automatique"
         self._attr_unique_id = f"{entry.entry_id}_reset_auto"
         self._attr_icon = "mdi:refresh"
+        self._attr_device_info = coordinator.device_info
 
     async def async_press(self) -> None:
         """Handle the button press."""
