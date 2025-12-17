@@ -8,6 +8,7 @@ from homeassistant.helpers import selector
 
 from .const import (
     DOMAIN,
+    CONF_NAME,
     CONF_TEMPO_COLOR,
     CONF_TEMPO_NEXT_COLOR,
     CONF_TEMPO_HC,
@@ -54,14 +55,19 @@ class ZendureTempoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     valid = False
 
             if valid:
+                # Use custom name or default with battery entity name
+                title = user_input.get(CONF_NAME, "Zendure Tempo")
                 return self.async_create_entry(
-                    title="Zendure Tempo",
+                    title=title,
                     data=user_input
                 )
 
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
+                vol.Optional(CONF_NAME, default="Zendure Tempo"): selector.TextSelector(
+                    selector.TextSelectorConfig(type=selector.TextSelectorType.TEXT)
+                ),
                 vol.Required(CONF_TEMPO_COLOR, default="sensor.rte_tempo_couleur_actuelle"): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="sensor")
                 ),
