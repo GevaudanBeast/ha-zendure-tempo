@@ -121,8 +121,25 @@ Dans les options de l'intégration (Paramètres → Appareils et services → Ze
 
 ## Entités créées
 
+### Contrôle
 - `switch.zendure_tempo_pilotage_tempo` : Activer/désactiver le pilotage
+
+### Informations
 - `sensor.zendure_tempo_mode_actuel` : Mode actif actuellement
+
+### Boutons de test
+
+Pour vérifier le bon fonctionnement du pilotage, vous disposez de boutons de test :
+
+- `button.test_rouge_hp` : Tester le mode Rouge HP (décharge max)
+- `button.test_rouge_hc` : Tester le mode Rouge HC (charge max)
+- `button.test_blanc_hp` : Tester le mode Blanc HP (décharge)
+- `button.test_blanc_hc` : Tester le mode Blanc HC (normal)
+- `button.test_veille_rouge` : Tester le mode Veille Rouge (charge préventive)
+- `button.test_bleu` : Tester le mode Bleu (normal)
+- `button.reinitialiser_mode_automatique` : Revenir au pilotage automatique
+
+**Utilisation** : Appuyez sur un bouton de test pour forcer temporairement un mode spécifique et vérifier que les valeurs de batterie changent correctement. Utilisez le bouton "Réinitialiser" pour revenir au pilotage automatique.
 
 ## Licence
 

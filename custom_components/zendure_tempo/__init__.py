@@ -44,7 +44,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.SWITCH, Platform.SENSOR]
+PLATFORMS = [Platform.SWITCH, Platform.SENSOR, Platform.BUTTON]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -110,6 +110,7 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
         # Restore enabled state from options (default: enabled)
         self.enabled = self._options.get("enabled", True)
         self._last_mode = None
+        self._test_mode = None  # For manual testing
 
     @property
     def _options(self) -> dict:
@@ -227,6 +228,10 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
 
     def get_current_mode(self) -> str:
         """Determine current mode based on tempo state."""
+        # If in test mode, return test mode
+        if self._test_mode:
+            return self._test_mode
+
         if not self.enabled:
             return MODE_DISABLED
 
@@ -368,3 +373,17 @@ class ZendureTempoCoordinator(DataUpdateCoordinator):
             await self._set_number(
                 self.entry.data[CONF_HYPER_SOC_SET], self.soc_normal
             )
+
+    async def async_apply_test_mode(self, mode: str) -> None:
+        """Apply a specific mode for testing purposes."""
+        _LOGGER.info("Applying test mode: %s", mode)
+        self._test_mode = mode
+        self._last_mode = None  # Force reapply
+        await self.async_request_refresh()
+
+    async def async_reset_to_auto(self) -> None:
+        """Reset to automatic mode."""
+        _LOGGER.info("Resetting to automatic mode")
+        self._test_mode = None
+        self._last_mode = None  # Force reapply
+        await self.async_request_refresh()

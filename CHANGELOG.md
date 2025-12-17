@@ -11,6 +11,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - Support multi-batteries : possibilité de créer plusieurs instances de l'intégration
 - Champ "Nom" personnalisable pour distinguer chaque instance/batterie
 - Documentation complète pour la configuration multi-batteries
+- Boutons de test pour vérifier manuellement chaque mode de pilotage
+- Bouton de réinitialisation pour revenir au mode automatique
 
 ## [0.0.4] - 2025-12-03
 
